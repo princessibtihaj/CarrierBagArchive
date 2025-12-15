@@ -1,0 +1,340 @@
+// --------------------------------------------------------
+// CarrierBagArchive()
+// A speculative pseudocode artifact for Environmental Humanities.
+// This is not meant to run; it is meant to be read.
+// ---------------------------------------------------------
+
+
+
+
+// ----------------------------
+// BASIC DATA STRUCTURES
+// ----------------------------
+
+
+  // Represents any participant in an environmental moment.
+  // This can be a human, nonhuman animal, plant, object, or force.
+
+
+  CLASS Entity
+    name // examples: "crow", "student", "Dana trash bin", "wind"
+    category // examples: "human", "animal", "infrastructure", "weather", "plant"
+
+
+  FUNCTION init(entityName, entityCategory)
+  // Store the basic identity and category of the entity.
+  // Simple on purpose: we are not quantifying, just naming.
+    name = entityName
+    category = entityCategory
+  END FUNCTION
+END CLASS
+	
+
+
+
+
+  // Represents a small environmental story: a moment of becoming-with.
+  // It always involves more than one entity, and preserves place + description.
+    CLASS Moment
+      id // a simple identifier (integer or string)
+      entities // LIST of Entity objects participating in this moment
+      place // textual description of location, (ex:"Dana loading dock")
+      description // narrative description of what happened
+      timeLabel // optional: "morning", "late winter", "after dinner", etc.
+
+
+  FUNCTION init(momentId, entitiesList, placeText, descriptionText, timeText)
+  // Store all information as text and lists, not numbers.
+  // This keeps the moment open-ended and narrative.
+    id = momentId
+
+
+  // We assume entitiesList already contains multiple Entity objects.
+    entities = entitiesList
+
+
+    place = placeText
+    description = descriptionText
+    timeLabel = timeText
+  END FUNCTION
+END CLASS
+
+
+
+
+
+
+// CarrierBagArchive holds many small moments together without ranking them.
+// It is the "carrier bag" that accumulates stories instead of extracting data.
+  CLASS CarrierBagArchive
+    moments // LIST of Moment objects
+    nextMomentId // counter for assigning new IDs
+
+
+  FUNCTION init()
+  // Start with an empty bag of moments.
+    moments = EMPTY LIST
+  // Initialize the ID counter at 0 (or any starting point).
+    nextMomentId = 0
+END FUNCTION
+
+
+
+
+// -------------------------------------------
+// recordMoment(): Le Guin + Wright
+// -------------------------------------------
+  FUNCTION recordMoment(entitiesList, placeText, descriptionText, timeText)
+  // This function creates and stores a new Moment in the archive.
+  // It enforces relationality by requiring more than one entity.
+
+
+    IF LENGTH(entitiesList) < 2 THEN
+       // If someone tries to record a moment with only one entity,
+       // we gently refuse. This encodes Wright's "becoming-with":
+      // nothing happens alone.
+      PRINT("Moment must include at least two entities. Nothing happens in isolation.")
+  RETURN
+END IF
+
+
+  // Create a new Moment with the current ID and provided details.
+    newMoment = NEW Moment(nextMomentId, entitiesList, placeText, descriptionText, timeText)
+
+
+  // Append the new Moment to the archive.
+  // This is Le Guin's carrier bag logic: we only add; we do not delete or sort.
+    APPEND(moments, newMoment)
+
+
+  // Increment the ID counter for the next Moment.
+    nextMomentId = nextMomentId + 1
+
+
+  PRINT("Moment recorded and carried in the archive.")
+  END FUNCTION
+
+
+
+
+
+
+// -------------------------------------------
+  // entangle(): Wright + Haraway
+  // -------------------------------------------
+    FUNCTION entangle(entityA, entityB, placeText, descriptionText, timeText)
+    // Shortcut helper that creates a new Moment connecting at least two entities.
+    // It emphasizes relation ("entanglement") rather than individual behavior.
+
+
+    // Build a small list of entities from inputs.
+    entitiesList = [entityA, entityB]
+
+
+// Optionally, more entities could be added here before calling recordMoment.
+// For now we use the minimum of two to enforce becoming-with.
+
+
+  // Delegate to recordMoment() so that the same relational logic applies.
+    CALL recordMoment(entitiesList, placeText, descriptionText, timeText)
+END FUNCTION
+
+
+
+
+
+
+// -------------------------------------------
+// slowAccumulate(): Nixon
+// -------------------------------------------
+  FUNCTION slowAccumulate(targetEntityName)
+  // This function is an experiment in seeing "slow violence."
+  // It looks across all moments and gathers those where a given entity appears.
+  // Instead of computing a numeric metric, it returns a list of stories.
+  // Meaning emerges through repetition, not through a single event.
+
+
+  PRINT("Tracing slow accumulation for entity: " + targetEntityName)
+
+
+  relatedMoments = EMPTY LIST
+
+
+    FOR EACH moment IN moments
+      // Check if the target entity appears in this moment.
+        FOR EACH ent IN moment.entities
+          IF ent.name == targetEntityName THEN
+            APPEND(relatedMoments, moment)
+      // We can stop checking this moment once we find the entity.
+        BREAK
+    END IF
+  END FOR
+END FOR
+
+
+  // Now we "show" the accumulated pattern as narrative, not as a statistic.
+    IF LENGTH(relatedMoments) == 0 THEN
+    PRINT("No recorded moments found for this entity yet.")
+      ELSE
+    PRINT("Moments where " + targetEntityName + " is entangled:")
+      FOR EACH m IN relatedMoments
+        PRINT("----")
+        PRINT("Place: " + m.place)
+        PRINT("Time: " + m.timeLabel)
+        PRINT("Description: " + m.description)
+  // Optionally list co-entities to emphasize multispecies relations.
+      coNames = []
+        FOR EACH e IN m.entities
+          APPEND(coNames, e.name)
+      END FOR
+    PRINT("Co-present entities: " + JOIN(coNames, ", "))
+  END FOR
+END IF
+
+
+// The function returns nothing numerical on purpose.
+// It surfaces slow violence and relation through repeated stories.
+END FUNCTION
+
+
+
+
+
+
+// -------------------------------------------
+// acknowledgeCost(): computation is not free
+// -------------------------------------------
+  FUNCTION acknowledgeCost()
+  // This function is a conceptual pause.
+  // It reminds the user that running code consumes energy, water, and materials.
+  // It does not compute a precise footprint; it insists on awareness.
+
+
+    PRINT("Before continuing, CarrierBagArchive() would like to pause.")
+    PRINT("Running code is not immaterial:")
+    PRINT("- Servers draw electricity, often from fossil fuels.")
+    PRINT("- Cooling systems use water and infrastructure.")
+    PRINT("- Devices rely on mined minerals and global supply chains.")
+    PRINT("This archive asks you to remember that even 'thinking in code' has a cost.")
+END FUNCTION
+
+
+
+
+
+
+// -------------------------------------------
+// retell(): Barad + Le Guin
+// -------------------------------------------
+  FUNCTION retell()
+  // This function re-tells some of the stored moments, not in order,
+  // to emphasize that stories can be recombined and revisited.
+  // It enacts Barad's idea of what is deemed relevant and worth it.
+
+
+    IF LENGTH(moments) == 0 THEN
+    PRINT("The archive is currently empty. There is nothing to retell yet.")
+  RETURN
+END IF
+
+
+    PRINT("Retelling selected moments from the CarrierBagArchive():")
+    PRINT("These are not 'highlights' but glimpses into accumulated relations.")
+
+
+  // For simplicity and to avoid heavy computation, we just iterate in stored order.
+      FOR EACH m IN moments
+        PRINT("----")
+        PRINT("Moment ID: " + TO_STRING(m.id))
+        PRINT("Place: " + m.place)
+        PRINT("Time: " + m.timeLabel)
+        PRINT("Description: " + m.description)
+
+
+  // Show all entities involved to foreground multispecies kin.
+  names = []
+    FOR EACH e IN m.entities
+      APPEND(names, e.name + " (" + e.category + ")")
+    END FOR
+  PRINT("Entities entangled here: " + JOIN(names, ", "))
+END FOR
+
+
+// There is no ranking or selection of "most important" moments.
+// This is deliberate: it refuses the hero narrative and stays with the trouble.
+END FUNCTION
+
+
+
+
+
+
+// -------------------------------------------
+// listAllMoments(): simple inspection
+// -------------------------------------------
+  FUNCTION listAllMoments()
+  // Utility function to see everything carried so far.
+  // This is primarily for the human reader of the pseudocode.
+
+
+  PRINT("Listing all moments currently carried in the archive:")
+
+
+    IF LENGTH(moments) == 0 THEN
+      PRINT(" (no moments recorded yet) ")
+  RETURN
+END IF
+
+
+    FOR EACH m IN moments
+      PRINT("----")
+      PRINT("ID: " + TO_STRING(m.id))
+      PRINT("Place: " + m.place)
+      PRINT("Time: " + m.timeLabel)
+      PRINT("Description: " + m.description)
+  END FOR
+END FUNCTION
+
+
+END CLASS
+
+
+
+
+
+
+// ---------------------------------------------------------
+// Example of how someone might "use" CarrierBagArchive().
+// Again: this is illustrative, not meant to be executed.
+// ---------------------------------------------------------
+
+
+  // Initialize the archive (the empty carrier bag).
+  archive = NEW CarrierBagArchive()
+
+
+  // Define some entities for a small example.
+  crow = NEW Entity("crow", "animal")
+  student = NEW Entity("student", "human")
+  trashBin = NEW Entity("Dana trash bin", "infrastructure")
+
+
+  // Record a moment of food waste with multispecies presence.
+  CALL archive.recordMoment(
+    [student, crow, trashBin],
+    "Dana loading dock",
+    "Student scrapes untouched food into the trash while a crow waits nearby.",
+    "late lunch"
+    )
+
+
+  // Later, we can trace the slow accumulation of moments involving the crow.
+  CALL archive.slowAccumulate("crow")
+
+
+  // We can pause and acknowledge the environmental cost of even this simple archive.
+  CALL archive.acknowledgeCost()
+  
+
+  // And we can retell everything the archive currently carries.
+  CALL archive.retell()
